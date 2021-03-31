@@ -9,7 +9,6 @@ const getUserIdByUsername = async (username) => {
             "Authorization": `Bearer ${token}`
         }
     });
-    console.log(' getUserIdByUsername >> ', retVal.body);
     if (retVal && retVal.body && retVal.body.data) {
         return retVal.body.data.id;
     }
@@ -46,7 +45,6 @@ async function getFollowers(req, res) {
                 "authorization": `Bearer ${token}`
             }
         })
-        console.log('getFollowers >> ', retVal.body);
 
         if (retVal.body) {
             return res.send({
@@ -80,7 +78,6 @@ const getTweets = async (username) => {
                 "Authorization": `Bearer ${token}`
             }
         })
-        console.log('getRecentTweets >> ', retVal.body);
         if (retVal.body) {
             if (retVal.body.data && retVal.body.data.length) {
                 await Tweets.insertMany(retVal.body.data)
