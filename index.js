@@ -2,18 +2,20 @@ const express = require('express')
 const app = express();
 const mongoose = require('mongoose')
 require('dotenv').config();
-const { getRecentTweets, getFollowers } = require('./service');
+const { getRecentTweets, getFollowers, getTweets } = require('./service');
 
 
-let { port, databaseUrl } = require('./config');
+let { port, databaseUrl, username } = require('./config');
 port = port || 3000;
 
 const CronJob = require('cron').CronJob;
 
-const job = new CronJob('0 29,59 * * * *', function () {
-    console.log('You will see this message every second');
-}, null, true);
-
+const job = new CronJob('0 29,59 * * * *', async function () {
+    console.log('This will run every 30 seconds');
+    if(username){
+        await getTweets(username);
+    }
+});
 
 app.use(express.json())
 

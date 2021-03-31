@@ -19,33 +19,8 @@ const getUserIdByUsername = async (username) => {
 async function getRecentTweets(req, res) {
     try {
         const { accountName } = req.params;
-        const userId = await getUserIdByUsername(accountName);
-        if (!userId) {
-            return res.send({
-                isError: true,
-                data: userId
-            });
-        }
-
-        const retVal = await needle('get', `${baseUrl}/users/${userId}/tweets`, {}, {
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        })
-        console.log('getRecentTweets >> ', retVal.body);
-        if (retVal.body) {
-            if (retVal.body.data && retVal.body.data.length) {
-                await Tweets.insertMany(retVal.body.data)
-            }
-            return res.send({
-                isError: false,
-                data: retVal.body
-            });
-        }
-        return res.send({
-            isError: true,
-            data: retVal
-        });
+        const retVal = await getTweets(accountName);
+        return retVal;
     } catch (err) {
         return res.send({
             isError: true
@@ -90,9 +65,46 @@ async function getFollowers(req, res) {
     }
 }
 
+const getTweets = async (username) => {
+    try {
+        const userId = await getUserIdByUsername(username);
+        if (!userId) {
+            return res.send({
+                isError: true,
+                data: userId
+            });
+        }
+
+        const retVal = await needle('get', `${baseUrl}/users/${userId}/tweets`, {}, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
+        console.log('getRecentTweets >> ', retVal.body);
+        if (retVal.body) {
+            if (retVal.body.data && retVal.body.data.length) {
+                await Tweets.insertMany(retVal.body.data)
+            }
+            return {
+                isError: false,
+                data: retVal.body
+            };
+        }
+        return {
+            isError: true,
+            data: retVal
+        };
+
+    } catch (err) {
+        return {
+            isError: true,
+            data: retVal
+        };
+    }
+}
 
 
 
 
 
-module.exports = { getRecentTweets, getFollowers }
+module.exports = { getRecentTweets, getFollowers, getTweets }
